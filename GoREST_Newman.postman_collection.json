@@ -1,0 +1,632 @@
+{
+	"info": {
+		"_postman_id": "14d2fd02-32e9-4143-927d-7186923796d1",
+		"name": "GoREST_Newman",
+		"description": "# Orden de ejecución\n\n<img src=\"https://content.pstmn.io/4dbf18fd-fd6d-4f37-9cdb-ff13daa9c11f/aW1hZ2UucG5n\" width=\"633\" height=\"785\">\n\n<img src=\"https://content.pstmn.io/5d53a07e-6449-4bc1-b9a1-a8a5c15fce75/aW1hZ2UucG5n\" width=\"633\" height=\"243\">",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47770263",
+		"_collection_link": "https://rsalazarherrera94-5515525.postman.co/workspace/Guido-Salazar's-Workspace~42e5741c-2c40-4726-8062-491a34506358/collection/47770263-14d2fd02-32e9-4143-927d-7186923796d1?action=share&source=collection_link&creator=47770263"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const genderList = [\"male\", \"female\"]",
+									"const statusList = [\"active\", \"inactive\"]",
+									"",
+									"const randomIndexGender = Math.floor(Math.random() * genderList.length)",
+									"const randomIndexStatus = Math.floor(Math.random() * statusList.length)",
+									"",
+									"const name = pm.variables.replaceIn(\"{{$randomFullName}}\")",
+									"const email = pm.variables.replaceIn(\"{{$randomEmail}}\")",
+									"",
+									"pm.environment.set(\"gender\", genderList[randomIndexGender])",
+									"pm.environment.set(\"status\", statusList[randomIndexStatus])",
+									"pm.environment.set(\"name\", name)",
+									"pm.environment.set(\"email\", email)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.environment.set(\"id\", responseJson.id);",
+									"",
+									"pm.test(\"Status code 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"})",
+									"",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    pm.expect(responseJson).to.have.property(\"id\");",
+									"    pm.expect(responseJson).to.have.property(\"name\");",
+									"    pm.expect(responseJson).to.have.property(\"email\");",
+									"    pm.expect(responseJson).to.have.property(\"gender\");",
+									"    pm.expect(responseJson).to.have.property(\"status\");",
+									"});",
+									"",
+									"pm.test(\"Test data type of the response\", function () {",
+									"    pm.expect(responseJson).to.be.an(\"object\");",
+									"    pm.expect(responseJson.id).to.be.a(\"number\");",
+									"    pm.expect(responseJson.name).to.be.a(\"string\");",
+									"    pm.expect(responseJson.email).to.be.a(\"string\")",
+									"    pm.expect(responseJson.gender).to.be.a(\"string\");",
+									"    pm.expect(responseJson.status).to.be.a(\"string\");",
+									"});",
+									"",
+									"pm.test(\"Response has correct values\", function () {",
+									"    pm.expect(responseJson.name).to.eql(pm.environment.get(\"name\"));",
+									"    pm.expect(responseJson.email).to.eql(pm.environment.get(\"email\"));",
+									"    pm.expect(responseJson.gender).to.eql(pm.environment.get(\"gender\"));",
+									"    pm.expect(responseJson.status).to.eql(pm.environment.get(\"status\"));",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 2000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{name}}\",\n    \"gender\": \"{{gender}}\",\n    \"email\": \"{{email}}\",\n    \"status\": \"{{status}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Generated from cURL: curl -i -H \"Accept:application/json\" -H \"Content-Type:application/json\" -H \"Authorization: Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560\" -XPOST \"https://gorest.co.in/public/v2/users\" -d '{\"name\":\"Tenali Ramakrishna\", \"gender\":\"male\", \"email\":\"tenali.ramakrishna@15ce.com\", \"status\":\"active\"}' "
+					},
+					"response": []
+				},
+				{
+					"name": "Create user with empty body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Status code name has a string\", function () {",
+									"    pm.response.to.have.status(\"Unprocessable Entity\");",
+									"});",
+									"",
+									"pm.test(\"Response should be an array\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Response contains error fields\", function () {",
+									"    const expectedErrorFields = [\"email\", \"name\", \"gender\", \"status\"];",
+									"",
+									"    var errorList = pm.response.json();",
+									"    ",
+									"    for(const error of errorList) {",
+									"        pm.expect(error.field).to.be.oneOf(expectedErrorFields);",
+									"    }",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create user with invalid email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Status code name has a string\", function () {",
+									"    pm.response.to.have.status(\"Unprocessable Entity\");",
+									"});",
+									"",
+									"pm.test(\"Response should be an array\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Response contains an object with field email\", function () {",
+									"    pm.expect(pm.response.json()[0].field).to.eql(\"email\");",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test\",\n    \"gender\": \"male\",\n    \"email\": \"invalidEmail\",\n    \"status\": \"active\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The response is an array\", function () {",
+									"    pm.expect(responseJson).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"The array contains at least one user\", function () {",
+									"    pm.expect(responseJson).to.have.length.at.least(1);",
+									"});",
+									"",
+									"pm.test(\"Check if the user has the correct properties\", function () {",
+									"    const index = Math.floor(Math.random() * responseJson.length);",
+									"    const user = responseJson[index];",
+									"",
+									"    pm.expect(user).to.have.property(\"id\");",
+									"    pm.expect(user).to.have.property(\"name\");",
+									"    pm.expect(user).to.have.property(\"email\");",
+									"    pm.expect(user).to.have.property(\"gender\");",
+									"    pm.expect(user).to.have.property(\"status\");",
+									"});",
+									"",
+									"pm.test(\"Check if the user has a correct status\", function () {",
+									"    const index = Math.floor(Math.random() * responseJson.length);",
+									"    const user = responseJson[index];",
+									"",
+									"    pm.expect(user.status).to.be.oneOf([\"active\", \"inactive\"]);",
+									"});",
+									"",
+									"pm.test(\"Check if the user has a valid gender\", function () {",
+									"    const index = Math.floor(Math.random() * responseJson.length);",
+									"    const user = responseJson[index];",
+									"",
+									"    pm.expect(user.gender).to.be.oneOf([\"female\", \"male\"]);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 3000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Generated from cURL: curl -i -H \"Accept:application/json\" -H \"Content-Type:application/json\" -H \"Authorization: Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560\" -XGET \"https://gorest.co.in/public/v2/users\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get user details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(responseJson).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    const user = responseJson;",
+									"",
+									"    pm.expect(user).to.have.property(\"id\");",
+									"    pm.expect(user).to.have.property(\"name\");",
+									"    pm.expect(user).to.have.property(\"email\");",
+									"    pm.expect(user).to.have.property(\"gender\");",
+									"    pm.expect(user).to.have.property(\"status\");",
+									"});",
+									"",
+									"pm.test(\"Response data is correct\", function () {",
+									"    pm.expect(responseJson.id).to.eql(pm.environment.get(\"id\"));",
+									"    pm.expect(responseJson.name).to.eql(pm.environment.get(\"name\"));",
+									"    pm.expect(responseJson.email).to.eql(pm.environment.get(\"email\"));",
+									"    pm.expect(responseJson.gender).to.eql(pm.environment.get(\"gender\"));",
+									"    pm.expect(responseJson.status).to.eql(pm.environment.get(\"status\"));",
+									"});",
+									"",
+									"pm.test(\"Content-type header is present\", function () {",
+									"    pm.response.to.have.header(\"Content-type\");",
+									"});",
+									"",
+									"pm.test(\"Content-type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(responseJson).to.be.an(\"object\"); ",
+									"});",
+									"",
+									"pm.test(\"Response structure is Ok\", function () {",
+									"    pm.expect(responseJson).to.have.property(\"id\");",
+									"    pm.expect(responseJson).to.have.property(\"name\");",
+									"    pm.expect(responseJson).to.have.property(\"email\");",
+									"    pm.expect(responseJson).to.have.property(\"gender\");",
+									"    pm.expect(responseJson).to.have.property(\"status\");",
+									"});",
+									"",
+									"pm.test(\"Response data type is correct\", function () {",
+									"    pm.expect(responseJson.id).to.be.a(\"number\");",
+									"    pm.expect(responseJson.name).to.be.a(\"string\");",
+									"    pm.expect(responseJson.email).to.be.a(\"string\");",
+									"    pm.expect(responseJson.gender).to.be.a(\"string\");",
+									"    pm.expect(responseJson.status).to.be.a(\"string\");",
+									"});",
+									"",
+									"pm.test(\"Response data is correct\", function () {",
+									"    pm.expect(responseJson.id).to.eql(pm.environment.get(\"id\"));",
+									"    pm.expect(responseJson.name).to.eql(pm.environment.get(\"name\"));",
+									"    pm.expect(responseJson.email).to.eql(pm.environment.get(\"email\"));",
+									"    pm.expect(responseJson.gender).to.eql(pm.environment.get(\"gender\"));",
+									"    pm.expect(responseJson.status).to.eql(pm.environment.get(\"status\"));",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 3000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const statusList = [\"active\", \"inactive\"]",
+									"",
+									"const name = pm.environment.get(\"name\");",
+									"const email = pm.environment.get(\"email\");",
+									"const status = pm.environment.get(\"status\");",
+									"",
+									"const indexStatusList = Math.floor(Math.random() * statusList.length);",
+									"",
+									"const newName = pm.variables.replaceIn(name + \"{{$randomAlphaNumeric}}\");",
+									"const newEmail = pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\" + email);",
+									"const newStatus = statusList[indexStatusList];",
+									"",
+									"pm.environment.set(\"name\", newName);",
+									"pm.environment.set(\"email\", newEmail);",
+									"pm.environment.set(\"status\", newStatus);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{name}}\",\n    \"email\": \"{{email}}\",\n    \"status\": \"{{status}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{id}}"
+							]
+						},
+						"description": "Generated from cURL: curl -i -H \"Accept:application/json\" -H \"Content-Type:application/json\" -H \"Authorization: Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560\" -XPATCH \"https://gorest.co.in/public/v2/users/7440272\" -d '{\"name\":\"Allasani Peddana\", \"email\":\"allasani.peddana@15ce.com\", \"status\":\"active\"}' "
+					},
+					"response": []
+				},
+				{
+					"name": "Update invalid user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response contains message \\\"Resource not found \\\"\", function () {",
+									"    pm.expect(pm.response.text().toLowerCase()).to.include(\"resource not found\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/-1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 3000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{id}}"
+							]
+						},
+						"description": "Generated from cURL: curl -i -H \"Accept:application/json\" -H \"Content-Type:application/json\" -H \"Authorization: Bearer ea96b27570c0fefe900b5639a947208e3a5ba8b3c509b8d799f8517ab5b67560\" -XDELETE \"https://gorest.co.in/public/v2/users/7440272\""
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{BearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
